@@ -96,6 +96,11 @@ export const PAYMENT_METHODS = [
   'BACS',
 ] as const
 
+export const ENGINEERS = [
+  'Yazen Yafai',
+  'Anees Farooq',
+] as const
+
 export interface Client {
   id: string
   name: string
@@ -132,6 +137,7 @@ export interface Job {
   date_paid: string | null
   payment_method: string | null
   source: string | null
+  engineer: string | null
   notes: string | null
   created_at: string
   clients?: { id: string; name: string } | null

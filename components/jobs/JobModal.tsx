@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { NativeSelect } from '@/components/ui/native-select'
 import { createJob, updateJob, deleteJob, fetchJobActivity } from '@/app/actions/jobs'
-import { Job, Client, JOB_STATUSES, SERVICES, CLIENT_TYPES } from '@/lib/types'
+import { Job, Client, JOB_STATUSES, SERVICES, CLIENT_TYPES, ENGINEERS } from '@/lib/types'
 import { Loader2, Trash2, FileDown, Eye, Download } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
@@ -106,7 +106,7 @@ export function JobModal({ open, onClose, job, clients, defaultStatus, defaultDa
       deposit_paid: form.deposit_paid ?? false,
       invoice_sent: form.invoice_sent ?? false,
       paid: form.paid ?? false, date_paid: form.date_paid || null,
-      source: form.source || null, notes: form.notes || null,
+      source: form.source || null, engineer: form.engineer || null, notes: form.notes || null,
     }
     const result = job ? await updateJob(job.id, payload) : await createJob(payload)
     setLoading(false)
@@ -172,6 +172,13 @@ export function JobModal({ open, onClose, job, clients, defaultStatus, defaultDa
                 <Label>Service</Label>
                 <NativeSelect value={form.service || ''} onChange={e => set('service', e.target.value)} placeholder="Select service…">
                   {SERVICES.map(s => <option key={s} value={s}>{s}</option>)}
+                </NativeSelect>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Engineer</Label>
+                <NativeSelect value={form.engineer || ''} onChange={e => set('engineer', e.target.value)} placeholder="Assign engineer…">
+                  <option value="">Unassigned</option>
+                  {ENGINEERS.map(e => <option key={e} value={e}>{e}</option>)}
                 </NativeSelect>
               </div>
               <div className="space-y-1.5">
