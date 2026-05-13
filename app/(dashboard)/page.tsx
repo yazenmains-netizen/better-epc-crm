@@ -42,7 +42,7 @@ export default async function DashboardPage({
     { data: recentClients },
     { data: pendingComms },
   ] = await Promise.all([
-    supabase.from('jobs').select('status, fee, paid, invoice_sent, date_paid'),
+    supabase.from('jobs').select('status, fee, paid, invoice_sent, date_paid, deposit_paid, deposit_amount'),
     expensesQuery,
     supabase
       .from('jobs')
@@ -69,11 +69,14 @@ export default async function DashboardPage({
 
   const allJobs = jobs || []
   const activeJobs = allJobs.filter(j => j.status !== 'Paid' && j.status !== 'Cancelled').length
-  const revenue = isAllTime
-    ? allJobs.filter(j => j.status === 'Paid').reduce((sum, j) => sum + (j.fee || 0), 0)
-    : allJobs
-        .filter(j => j.status === 'Paid' && j.date_paid && j.date_paid >= firstOfMonth && j.date_paid <= lastOfMonth)
-        .reduce((sum, j) => sum + (j.fee || 0), 0)
+  // Revenue = deposit when deposit_paid, + remainder when fully paid
+  function jobRevenue(j: { fee?: number | null; deposit_paid?: boolean | null; deposit_amount?: number | null; paid?: boolean | null }) {
+    let r = 0
+    if (j.deposit_paid) r += (j.deposit_amount || 0)
+    if (j.paid) r += Math.max(0, (j.fee || 0) - (j.deposit_amount || 0))
+    return r
+  }
+  const revenue = allJobs.reduce((sum, j) => sum + jobRevenue(j), 0)
   const outstandingTotal = allJobs
     .filter(j => j.status === 'Invoice Sent')
     .reduce((sum, j) => sum + (j.fee || 0), 0)
