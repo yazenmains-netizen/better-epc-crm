@@ -3,7 +3,7 @@
 import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
 import { Job, STATUS_COLOURS } from '@/lib/types'
-import { MapPin, User, Wrench } from 'lucide-react'
+import { MapPin, User, Wrench, HardHat } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface JobCardProps {
@@ -56,6 +56,12 @@ export function JobCard({ job, onClick, isDragging }: JobCardProps) {
           <div className="flex items-center gap-1 text-xs text-gray-500">
             <Wrench className="h-3 w-3" />
             <span>{job.service}</span>
+          </div>
+        )}
+        {job.engineer && (
+          <div className="flex items-center gap-1 text-xs text-[#16512a] font-medium">
+            <HardHat className="h-3 w-3" />
+            <span>{job.engineer}</span>
           </div>
         )}
       </div>
