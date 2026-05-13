@@ -24,10 +24,10 @@ interface JobModalProps {
 }
 
 const EMPTY: Partial<Job> = {
-  ref: '', status: 'To Be Booked', service: '', property_address: '',
-  postcode: '', contact_phone: '', contact_email: '', fee: undefined, source: '',
-  client_type: '', notes: '', invoice_sent: false, paid: false,
-  review_requested: false, review_received: false,
+  ref: '', status: 'New Lead', service: '', property_address: '',
+  postcode: '', contact_phone: '', contact_email: '', fee: 250, deposit_amount: 60,
+  source: '', client_type: '', notes: '', invoice_sent: false, paid: false,
+  deposit_paid: false,
 }
 
 type ActivityItem = { id: string; type: string; description: string; created_at: string }
@@ -60,7 +60,7 @@ export function JobModal({ open, onClose, job, clients, defaultStatus, defaultDa
 
   useEffect(() => {
     if (job) setForm(job)
-    else setForm({ ...EMPTY, status: (defaultStatus as Job['status']) || 'To Be Booked', date: defaultDate || '' })
+    else setForm({ ...EMPTY, status: (defaultStatus as Job['status']) || 'New Lead', date: defaultDate || '' })
     setTab('details')
   }, [job, defaultStatus, open])
 
@@ -83,9 +83,9 @@ export function JobModal({ open, onClose, job, clients, defaultStatus, defaultDa
       setForm(f => ({
         ...f,
         status: value as Job['status'],
-        invoice_sent: value === 'Invoice Sent' || value === 'Paid',
-        paid: value === 'Paid',
-        date_paid: value === 'Paid' ? (f.date_paid || new Date().toISOString().split('T')[0]) : (value === 'Invoice Sent' ? null : f.date_paid),
+        deposit_paid: value === 'Deposit Paid' || value === 'Survey Booked' || value === 'Survey Complete' || value === 'Modelling Complete' || value === 'Awaiting Final Payment' || value === 'Report Released' ? true : f.deposit_paid,
+        paid: value === 'Report Released' ? true : value === 'New Lead' || value === 'Deposit Paid' || value === 'Survey Booked' ? false : f.paid,
+        date_paid: value === 'Report Released' ? (f.date_paid || new Date().toISOString().split('T')[0]) : f.date_paid,
       }))
       return
     }
@@ -98,13 +98,15 @@ export function JobModal({ open, onClose, job, clients, defaultStatus, defaultDa
     const payload = {
       ref: form.ref, status: form.status, date: form.date || null, time: form.time || null,
       client_id: form.client_id || null, client_type: form.client_type || null,
-      contact_phone: form.contact_phone || null, contact_email: form.contact_email || null, property_address: form.property_address || null,
-      postcode: form.postcode || null, service: form.service || null,
-      fee: form.fee ? Number(form.fee) : null, invoice_sent: form.invoice_sent ?? false,
+      contact_phone: form.contact_phone || null, contact_email: form.contact_email || null,
+      property_address: form.property_address || null, postcode: form.postcode || null,
+      service: form.service || null,
+      fee: form.fee ? Number(form.fee) : null,
+      deposit_amount: form.deposit_amount ? Number(form.deposit_amount) : null,
+      deposit_paid: form.deposit_paid ?? false,
+      invoice_sent: form.invoice_sent ?? false,
       paid: form.paid ?? false, date_paid: form.date_paid || null,
-      payment_method: form.payment_method || null, source: form.source || null,
-      review_requested: form.review_requested ?? false, review_received: form.review_received ?? false,
-      notes: form.notes || null,
+      source: form.source || null, notes: form.notes || null,
     }
     const result = job ? await updateJob(job.id, payload) : await createJob(payload)
     setLoading(false)
@@ -218,24 +220,31 @@ export function JobModal({ open, onClose, job, clients, defaultStatus, defaultDa
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label>Fee (£)</Label>
-                <Input type="number" value={form.fee ?? ''} onChange={e => set('fee', e.target.value ? Number(e.target.value) : undefined)} placeholder="70" min="0" step="0.01" />
+            {/* Payment tracking */}
+            <div className="rounded-lg border border-gray-100 bg-gray-50 p-3 space-y-3">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Payment — Total £250</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label>Deposit (£)</Label>
+                  <Input type="number" value={form.deposit_amount ?? ''} onChange={e => set('deposit_amount', e.target.value ? Number(e.target.value) : undefined)} placeholder="60" min="0" step="0.01" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Total Fee (£)</Label>
+                  <Input type="number" value={form.fee ?? ''} onChange={e => set('fee', e.target.value ? Number(e.target.value) : undefined)} placeholder="250" min="0" step="0.01" />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-x-6 gap-y-2">
+                {([['deposit_paid', 'Deposit Paid'], ['paid', 'Final Payment Received'], ['invoice_sent', 'Invoice Sent']] as const).map(([field, label]) => (
+                  <label key={field} className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input type="checkbox" checked={!!form[field]} onChange={e => set(field, e.target.checked)} className="h-4 w-4 rounded border-gray-300 accent-[#16512a]" />
+                    {label}
+                  </label>
+                ))}
               </div>
               <div className="space-y-1.5">
-                <Label>Date Paid</Label>
+                <Label>Date Final Payment Received</Label>
                 <Input type="date" value={form.date_paid || ''} onChange={e => set('date_paid', e.target.value)} />
               </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-x-6 gap-y-2">
-              {([['invoice_sent', 'Invoice Sent'], ['paid', 'Paid'], ['review_requested', 'Review Requested'], ['review_received', 'Review Received']] as const).map(([field, label]) => (
-                <label key={field} className="flex items-center gap-2 text-sm cursor-pointer">
-                  <input type="checkbox" checked={!!form[field]} onChange={e => set(field, e.target.checked)} className="h-4 w-4 rounded border-gray-300 accent-[#16512a]" />
-                  {label}
-                </label>
-              ))}
             </div>
 
             <div className="space-y-1.5">

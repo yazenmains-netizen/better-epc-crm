@@ -1,84 +1,87 @@
 export type JobStatus =
-  | 'To Be Booked'
-  | 'Booked In'
-  | 'Completed'
-  | 'Invoice Sent'
-  | 'Paid'
+  | 'New Lead'
+  | 'Deposit Paid'
+  | 'Survey Booked'
+  | 'Survey Complete'
+  | 'Modelling Complete'
+  | 'Awaiting Final Payment'
+  | 'Report Released'
   | 'Cancelled'
 
 export const KANBAN_COLUMNS: JobStatus[] = [
-  'To Be Booked',
-  'Booked In',
-  'Completed',
-  'Invoice Sent',
-  'Paid',
+  'New Lead',
+  'Deposit Paid',
+  'Survey Booked',
+  'Survey Complete',
+  'Modelling Complete',
+  'Awaiting Final Payment',
+  'Report Released',
 ]
 
 export const JOB_STATUSES: JobStatus[] = [...KANBAN_COLUMNS, 'Cancelled']
 
 export const STATUS_COLOURS: Record<JobStatus, string> = {
-  'To Be Booked': 'bg-orange-100 text-orange-800 border-orange-200',
-  'Booked In': 'bg-purple-100 text-purple-800 border-purple-200',
-  'Completed': 'bg-teal-100 text-teal-800 border-teal-200',
-  'Invoice Sent': 'bg-amber-100 text-amber-800 border-amber-200',
-  'Paid': 'bg-green-100 text-green-800 border-green-200',
-  'Cancelled': 'bg-gray-100 text-gray-600 border-gray-200',
+  'New Lead':               'bg-blue-100 text-blue-800 border-blue-200',
+  'Deposit Paid':           'bg-amber-100 text-amber-800 border-amber-200',
+  'Survey Booked':          'bg-purple-100 text-purple-800 border-purple-200',
+  'Survey Complete':        'bg-teal-100 text-teal-800 border-teal-200',
+  'Modelling Complete':     'bg-indigo-100 text-indigo-800 border-indigo-200',
+  'Awaiting Final Payment': 'bg-orange-100 text-orange-800 border-orange-200',
+  'Report Released':        'bg-green-100 text-green-800 border-green-200',
+  'Cancelled':              'bg-gray-100 text-gray-600 border-gray-200',
 }
 
 export const STATUS_COLUMN_COLOURS: Record<JobStatus, string> = {
-  'To Be Booked': 'border-t-orange-400',
-  'Booked In': 'border-t-purple-400',
-  'Completed': 'border-t-teal-400',
-  'Invoice Sent': 'border-t-amber-400',
-  'Paid': 'border-t-green-500',
-  'Cancelled': 'border-t-gray-400',
+  'New Lead':               'border-t-blue-400',
+  'Deposit Paid':           'border-t-amber-400',
+  'Survey Booked':          'border-t-purple-400',
+  'Survey Complete':        'border-t-teal-400',
+  'Modelling Complete':     'border-t-indigo-400',
+  'Awaiting Final Payment': 'border-t-orange-400',
+  'Report Released':        'border-t-green-500',
+  'Cancelled':              'border-t-gray-400',
 }
 
-
 export const CLIENT_TYPES = [
-  'Estate Agent',
+  'Direct Lead',
+  'Referral',
   'Landlord',
-  'Contractor',
-  'Property Portfolio',
-  'Direct Client',
-  'Government',
-  'Partner',
+  'Letting Agent',
+  'Estate Agent',
+  'Housing Association',
+  'Other',
 ] as const
 
 export const SERVICES = [
-  'EPC',
-  'Homebuyer Report',
-  'Building Survey',
-  'Damp & Mould Survey',
-  'Gas Safety Certificate',
+  'EPC Consultation',
+  'EPC Assessment',
+  'Energy Modelling',
+  'EPC + Modelling',
 ] as const
 
 export const SOURCES = [
-  'Direct',
+  'Facebook Ads',
+  'Google Ads',
   'Referral',
-  'Haart Harborne',
-  'Haart Wolverhampton',
-  'Burchell Edwards',
-  'Google',
-  'Social Media',
-  'Government',
+  'Direct',
+  'Instagram',
   'Other',
 ] as const
 
 export const HOW_FOUND = [
-  'Google',
+  'Facebook Ads',
+  'Google Ads',
   'Referral',
-  'Estate Agent',
+  'Direct',
   'Social Media',
-  'Cold Outreach',
   'Other',
 ] as const
 
 export const EXPENSE_CATEGORIES = [
-  'Equipment',
+  'Advertising',
   'Software/Subscriptions',
+  'Equipment',
   'Travel',
-  'Marketing',
   'Professional Fees',
   'Insurance',
   'Training',
@@ -122,13 +125,13 @@ export interface Job {
   postcode: string | null
   service: string | null
   fee: number | null
+  deposit_amount: number | null
+  deposit_paid: boolean
   invoice_sent: boolean
   paid: boolean
   date_paid: string | null
   payment_method: string | null
   source: string | null
-  review_requested: boolean
-  review_received: boolean
   notes: string | null
   created_at: string
   clients?: { id: string; name: string } | null
