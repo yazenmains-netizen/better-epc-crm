@@ -66,9 +66,24 @@ export function JobCard({ job, onClick, isDragging }: JobCardProps) {
         )}
       </div>
 
-      {job.paid && (
-        <div className="mt-2">
-          <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-medium">Paid</span>
+      {(job.paid || (job.email_sequence && job.email_sequence !== 'none')) && (
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {job.paid && (
+            <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-medium">Paid</span>
+          )}
+          {job.email_sequence && job.email_sequence !== 'none' && (
+            <span className={cn(
+              'text-xs px-1.5 py-0.5 rounded font-medium',
+              job.email_sequence === 'weekly'
+                ? 'bg-blue-100 text-blue-700'
+                : 'bg-amber-100 text-amber-700'
+            )}>
+              {job.email_sequence === 'day1' && 'Day 1'}
+              {job.email_sequence === 'day2' && 'Day 2'}
+              {job.email_sequence === 'day3' && 'Day 3'}
+              {job.email_sequence === 'weekly' && 'Weekly'}
+            </span>
+          )}
         </div>
       )}
     </div>

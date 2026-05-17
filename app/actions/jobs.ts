@@ -86,8 +86,15 @@ export async function updateJobStatus(id: string, status: string) {
     booleanUpdates.invoice_sent = false
     booleanUpdates.paid = false
     booleanUpdates.date_paid = null
+  } else if (status === 'Not Interested') {
+    // Start the lead nurture email sequence
+    booleanUpdates.email_sequence = 'day1'
+    booleanUpdates.sequence_started_at = new Date().toISOString()
+    booleanUpdates.invoice_sent = false
+    booleanUpdates.paid = false
+    booleanUpdates.date_paid = null
   } else {
-    // To Be Booked, Booked In, Completed — pre-invoice stages
+    // New Lead, Deposit Paid, Survey Booked, etc — pre-invoice stages
     booleanUpdates.invoice_sent = false
     booleanUpdates.paid = false
     booleanUpdates.date_paid = null

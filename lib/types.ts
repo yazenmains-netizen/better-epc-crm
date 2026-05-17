@@ -1,5 +1,6 @@
 export type JobStatus =
   | 'New Lead'
+  | 'Not Interested'
   | 'Deposit Paid'
   | 'Survey Booked'
   | 'Survey Complete'
@@ -10,6 +11,7 @@ export type JobStatus =
 
 export const KANBAN_COLUMNS: JobStatus[] = [
   'New Lead',
+  'Not Interested',
   'Deposit Paid',
   'Survey Booked',
   'Survey Complete',
@@ -22,6 +24,7 @@ export const JOB_STATUSES: JobStatus[] = [...KANBAN_COLUMNS, 'Cancelled']
 
 export const STATUS_COLOURS: Record<JobStatus, string> = {
   'New Lead':               'bg-blue-100 text-blue-800 border-blue-200',
+  'Not Interested':         'bg-red-100 text-red-700 border-red-200',
   'Deposit Paid':           'bg-amber-100 text-amber-800 border-amber-200',
   'Survey Booked':          'bg-purple-100 text-purple-800 border-purple-200',
   'Survey Complete':        'bg-teal-100 text-teal-800 border-teal-200',
@@ -33,6 +36,7 @@ export const STATUS_COLOURS: Record<JobStatus, string> = {
 
 export const STATUS_COLUMN_COLOURS: Record<JobStatus, string> = {
   'New Lead':               'border-t-blue-400',
+  'Not Interested':         'border-t-red-400',
   'Deposit Paid':           'border-t-amber-400',
   'Survey Booked':          'border-t-purple-400',
   'Survey Complete':        'border-t-teal-400',
@@ -141,6 +145,9 @@ export interface Job {
   notes: string | null
   created_at: string
   clients?: { id: string; name: string } | null
+  email_sequence?: 'none' | 'day1' | 'day2' | 'day3' | 'weekly'
+  sequence_started_at?: string | null
+  sequence_last_sent_at?: string | null
 }
 
 export interface Invoice {

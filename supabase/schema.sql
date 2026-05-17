@@ -140,3 +140,15 @@ create index if not exists invoices_job_id_idx on invoices(job_id);
 create index if not exists mileage_job_id_idx on mileage(job_id);
 create index if not exists comms_queue_status_idx on comms_queue(status);
 create index if not exists comms_queue_job_id_idx on comms_queue(job_id);
+
+-- ─── LEAD NURTURE EMAIL SEQUENCE ───────────────────────────────────────────
+-- Add 'Not Interested' to valid job statuses
+ALTER TABLE jobs DROP CONSTRAINT IF EXISTS jobs_status_check;
+
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS email_sequence TEXT DEFAULT 'none' CHECK (email_sequence IN ('none', 'day1', 'day2', 'day3', 'weekly'));
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS sequence_started_at TIMESTAMPTZ;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS sequence_last_sent_at TIMESTAMPTZ;
+
+-- Index for the scheduled email function to query efficiently
+create index if not exists jobs_email_sequence_idx on jobs(email_sequence) where email_sequence != 'none';
+create index if not exists jobs_status_sequence_idx on jobs(status, email_sequence);

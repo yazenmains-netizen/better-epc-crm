@@ -84,8 +84,11 @@ export function JobModal({ open, onClose, job, clients, defaultStatus, defaultDa
         ...f,
         status: value as Job['status'],
         deposit_paid: value === 'Deposit Paid' || value === 'Survey Booked' || value === 'Survey Complete' || value === 'Modelling Complete' || value === 'Awaiting Final Payment' || value === 'Report Released' ? true : f.deposit_paid,
-        paid: value === 'Report Released' ? true : value === 'New Lead' || value === 'Deposit Paid' || value === 'Survey Booked' ? false : f.paid,
+        paid: value === 'Report Released' ? true : value === 'New Lead' || value === 'Not Interested' || value === 'Deposit Paid' || value === 'Survey Booked' ? false : f.paid,
         date_paid: value === 'Report Released' ? (f.date_paid || new Date().toISOString().split('T')[0]) : f.date_paid,
+        // Auto-start email sequence when marking Not Interested
+        email_sequence: value === 'Not Interested' ? 'day1' : f.email_sequence,
+        sequence_started_at: value === 'Not Interested' && !f.sequence_started_at ? new Date().toISOString() : f.sequence_started_at,
       }))
       return
     }
@@ -107,6 +110,9 @@ export function JobModal({ open, onClose, job, clients, defaultStatus, defaultDa
       invoice_sent: form.invoice_sent ?? false,
       paid: form.paid ?? false, date_paid: form.date_paid || null,
       source: form.source || null, engineer: form.engineer || null, notes: form.notes || null,
+      email_sequence: form.email_sequence ?? 'none',
+      sequence_started_at: form.sequence_started_at || null,
+      sequence_last_sent_at: form.sequence_last_sent_at || null,
     }
     const result = job ? await updateJob(job.id, payload) : await createJob(payload)
     setLoading(false)
