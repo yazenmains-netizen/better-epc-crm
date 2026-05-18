@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Job, Client, STATUS_COLOURS, JOB_STATUSES } from '@/lib/types'
 import { JobModal } from './JobModal'
 import { cn } from '@/lib/utils'
