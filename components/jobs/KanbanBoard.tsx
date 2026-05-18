@@ -75,6 +75,8 @@ interface KanbanBoardProps {
 export function KanbanBoard({ initialJobs, clients }: KanbanBoardProps) {
   const [jobs, setJobs] = useState<Job[]>(initialJobs)
   const [activeJob, setActiveJob] = useState<Job | null>(null)
+
+  useEffect(() => { setJobs(initialJobs) }, [initialJobs])
   const [modalOpen, setModalOpen] = useState(false)
   const [editingJob, setEditingJob] = useState<Job | null>(null)
   const [defaultStatus, setDefaultStatus] = useState<string>('To Be Booked')
