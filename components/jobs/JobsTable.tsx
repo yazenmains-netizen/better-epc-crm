@@ -22,8 +22,10 @@ function sortJobs(jobs: Job[], key: SortKey, dir: 'asc' | 'desc'): Job[] {
 }
 
 export function JobsTable({ initialJobs, clients }: { initialJobs: Job[]; clients: Client[] }) {
-  const [jobs] = useState(initialJobs)
+  const [jobs, setJobs] = useState(initialJobs)
   const [sortKey, setSortKey] = useState<SortKey>('date')
+
+  useEffect(() => { setJobs(initialJobs) }, [initialJobs])
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
   const [editing, setEditing] = useState<Job | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
